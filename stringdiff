@@ -1,0 +1,15 @@
+#!/bin/bash
+
+if [[ -z $2 ]]; then
+    echo "Usage: stringdiff file1 file2"
+    echo
+    echo "The 'strings' tool from 'binutils' package is required."
+    exit 1
+fi
+
+FILE1=$1
+FILE2=$2
+
+echo "String-diffing $1 (red) against $2 (green):"
+
+diff --width=140 --suppress-common-lines --report-identical-files <(strings $1) <(strings $2) | colordiff

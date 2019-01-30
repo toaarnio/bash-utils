@@ -1,0 +1,15 @@
+#!/bin/bash
+
+if [[ -z $2 ]]; then
+    echo "Usage: bindiff file1 file2"
+    echo
+    echo "The 'xxd' tool from 'vim-common' package is required."
+    exit 1
+fi
+
+FILE1=$1
+FILE2=$2
+
+echo "Binary-diffing $1 (left) against $2 (right):"
+
+diff --width=140 --suppress-common-lines --side-by-side --report-identical-files <(xxd $1) <(xxd $2) | colordiff
