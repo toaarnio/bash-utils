@@ -1,0 +1,42 @@
+#!/bin/bash
+
+if [[ -z $2 ]]; then
+    echo "Usage: videostack video1 video2"
+    echo
+    echo "Combines the two given videos into one split-screen video. The split"
+    echo "can be either left-to-right or diagonal (top-left to bottom-right)."
+    echo "Split mode, output resolution and other parameters can be changed by"
+    echo "editing this script. Output filename is fixed at 'stacked.mp4' or"
+    echo "'diagonal.mp4', depending on the split mode. 'ffmpeg' must be present"
+    echo "along \$PATH."
+    echo
+    exit 1
+fi
+
+MODE="stacked"  # "stacked" | "diagonal"
+YRES=540        # total stacked height = 2 * YRES
+CRF=18          # bigger is better quality, 18 should be visually lossless
+
+TOP=$1
+BOTTOM=$2
+
+# '-strict -2' required for AAC decoding
+# '-crf 18' should produce "visually lossless" quality
+# '-ac 2' takes the audio stream from the bottom video
+# '-preset veryfast' optimizes speed over file size
+# '-filter complex ...' performs scaling & combining
+
+if [[ $MODE = "stacked" ]]; then
+    ffmpeg -i $TOP -i $BOTTOM -strict -2 -crf ${CRF} -preset veryfast -ac 2 \
+           -filter_complex "[0:v]setdar=16/9[top]; [1:v]setdar=16/9[bottom]; \
+                            [top]scale=-1:${YRES}[top];[bottom]scale=-1:${YRES}[bottom]; \
+                            [top][bottom]vstack" \
+           ${MODE}.mp4
+fi
+
+if [[ $MODE = "diagonal" ]]; then
+    ffmpeg -i $TOP -i $BOTTOM -strict -2 -crf ${CRF} -preset veryfast -ac 2 \
+           -filter_complex "[0:v]setdar=16/9[top]; [1:v]setdar=16/9[bottom]; \
+                            [top][bottom]blend=all_expr=if(gt(X\,Y*(W/H))\,A\,B)" \
+           ${MODE}.mp4
+fi
