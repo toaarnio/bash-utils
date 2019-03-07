@@ -1,0 +1,35 @@
+#!/bin/bash
+
+if [[ -z ${1} ]] || [[ ${1} == "--help" ]]; then
+    echo "Usage: exif2dng image.jpg"
+    echo
+    echo "  Copies a set of EXIF tags from the given JPEG file to a DNG"
+    echo "  file. The DNG file must already exist, have the same base"
+    echo "  name as the JPEG, and have a lower-case .dng extension."
+    echo
+    exit -1
+fi
+
+filespec=$1
+fname=$(basename $filespec)
+basename=${fname%.*}
+dngname=${basename}.dng
+
+if [[ ! -f ${filespec} ]]; then
+    echo "File '${filespec}' not found!"
+    exit -1
+fi
+
+if [ ! -f ${dngname} ]; then
+    echo "File ${dngname} not found!"
+    exit -1
+fi
+
+echo "Extracting EXIF tags from ${filespec}, writing to ${dngname}..."
+
+tags="ShutterSpeedValue ApertureValue FNumber ISO FocalLengthIn35mmFormat Orientation"
+
+for tagname in ${tags}; do
+  echo "$tagname..."
+  exiftool -quiet -TagsFromFile $filespec -${tagname} $dngname
+done
