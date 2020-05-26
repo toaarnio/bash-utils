@@ -1,7 +1,9 @@
 #!/bin/bash
 
-python3 -c "import sys, os, time, glob;\
+ipython -c "import sys, os, time, glob, json;\
   import numpy as np;\
+  import scipy.interpolate;\
+  import scipy.signal;\
   import pprint;\
   import inspect;\
   import rawpipe;\
