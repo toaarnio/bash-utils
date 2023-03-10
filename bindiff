@@ -12,4 +12,4 @@ FILE2=$2
 
 echo "Binary-diffing $1 (left) against $2 (right):"
 
-diff --width=140 --suppress-common-lines --side-by-side --report-identical-files <(xxd $1) <(xxd $2) | colordiff
+diff --width=180 --suppress-common-lines --side-by-side --report-identical-files <(xxd -g 1 $1) <(xxd -g 1 $2) | colordiff
