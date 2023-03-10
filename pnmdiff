@@ -1,0 +1,22 @@
+#!/bin/bash
+
+if [[ -z ${1} || -z ${2} || ${1} == "--help" ]]; then
+    echo "Usage: pnmdiff image1.pnm image2.pnm"
+    echo
+    echo "  Compares the given images both bit-by-bit and by using PSNR."
+    echo
+    exit -1
+fi
+
+filespec=$1
+fname=$(basename $filespec)
+basename=${fname%.*}
+dngname=${basename}.dng
+
+if [[ ! -f ${filespec} ]]; then
+    echo "File '${filespec}' not found!"
+    exit -1
+fi
+
+pnmpsnr ${1} ${2}
+diff --report-identical-files ${1} ${2}
