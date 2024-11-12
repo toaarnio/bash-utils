@@ -1,0 +1,11 @@
+#!/bin/bash
+
+if [ "$#" -ne 1 ]
+then
+    echo usage: glob filespec
+    echo
+    echo Equivalent to \'find . -name filespec\'.
+    exit -1
+fi
+
+find . -name "$1"
